@@ -45,6 +45,9 @@
       ]
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rishisharmapro/cp-buddy"},
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
