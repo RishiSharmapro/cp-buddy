@@ -390,7 +390,7 @@ function activate(context) {
 					// vscode.window.showInformationMessage(`Output:\n${userOutput}`);
 					const correctOutput = outputs.join('\n');
 					if (userOutput.trim() === correctOutput.trim()) {
-						createPannel(inputs.join('\n'), userOutput, stderr, contestId, problemLetter, correctOutput);
+						createPannel(inputs.join('\n'), userOutput.trim(), stderr, contestId, problemLetter, correctOutput.trim());
 						vscode.window.showInformationMessage("✅ All test cases passed! ");
 					}
 					else {
