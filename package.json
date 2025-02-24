@@ -9,13 +9,21 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:cpBuddy.installLanguage"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
         "command": "cp-buddy.helloWorld",
-        "title": "Hello World"
+        "title": "Hello World",
+        "category": "Cp-buddy"
+      },
+      {
+        "command": "cp-buddy.installLanguage",
+        "title": "Install Language",
+        "category": "Cp-buddy"
       },
       {
         "command": "cp-buddy.runTestCases",
@@ -47,7 +55,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rishisharmapro/cp-buddy"},
+    "url": "https://github.com/rishisharmapro/cp-buddy"
+  },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
@@ -62,8 +71,8 @@
     "eslint": "^9.16.0"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "cheerio": "^1.0.0",
-    "puppeteer": "^23.11.1"
+    "puppeteer": "^24.1.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }
