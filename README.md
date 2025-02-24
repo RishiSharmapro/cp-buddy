@@ -1,71 +1,34 @@
-# cp-buddy README
-
-This extension is a tool for competitive programmers to help them in their coding journey. It provides a set of tools that can be used to make the coding process easier and faster.
-
-Using it locally: 
-1. Clone the repo
-2. Run `npm install`
-3. Run `npm run watch`
-4. Press `F5` to open a new window with your extension loaded
+# CP-buddy
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Automatic Language Installation:**  
+  Prompts you to select a programming language on first run and installs it using your system’s package manager.
 
-For example if there is an image subfolder under your extension project workspace:
+- **Code Execution:**  
+  Compiles and runs your code (e.g., C++, Python, Java, Node.js, etc.) using the latest available compilers/interpreters, with output displayed directly in VS Code.
 
-\!\[feature X\]\(images/feature-x.png\)
+- **Test Case Caching:**  
+  Fetches sample test cases using Puppeteer and caches them in memory for 2 hours to reduce redundant network requests during contests.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- **File Cleanup:**  
+  Automatically cleans up temporary files (input, output, and compiled binaries) after execution to keep your workspace organized.
 
-## Requirements
+## Commands
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **CP-Buddy: Run Code:**  
+  Compiles and executes the currently active code file.
 
-## Extension Settings
+- **CP-Buddy: Install Language:**  
+  Installs a selected programming language using your system’s package manager.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- **CP-Buddy: Fetch Test Cases:**  
+  Retrieves and caches sample test cases for a problem.
 
-For example:
+## License
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/RishiSharmapro/cp-buddy/blob/main/LICENCE.md) file for details.
 
 ---
 
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Feel free to expand these sections as you add more features or commands!
