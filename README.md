@@ -29,6 +29,3 @@
 
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/RishiSharmapro/cp-buddy/blob/main/LICENCE.md) file for details.
 
----
-
-Feel free to expand these sections as you add more features or commands!
