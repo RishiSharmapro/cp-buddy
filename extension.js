@@ -232,7 +232,7 @@ function activate(context) {
 	// for deleting the input and output files
 	async function cleanUpFiles(inputFilePath, outputFilePath) {
 		// also deleting compiled binary file
-		const binaryFilePath = outputFilePath.replace('.txt', '.out');
+		const binaryFilePath = outputFilePath.replace('_result.txt', '.out');
 		console.log("binaryFilePath: ", binaryFilePath);
 		
 		[inputFilePath, outputFilePath, binaryFilePath].forEach((file) => {
@@ -271,6 +271,9 @@ function activate(context) {
 			// Combine error and snippet
 			return `${mainError}\n${codeSnippet}`;
 		}
+		else if(stderr.length > 0) {
+			return stderr;
+		}
 
 		return "No errors detected.";
 	}
@@ -287,8 +290,10 @@ function activate(context) {
 			} // Webview options
 		);
 		let mainErrorMessage = "No errors detected.";
-		if (stderr) {
+		
+		if (stderr.length > 0) {
 			mainErrorMessage = parseCompilerError(stderr);
+			
 		}
 		// setting the pannel width
 		// await vscode.commands.executeCommand('workbench.action.splitEditorRight');
@@ -514,7 +519,7 @@ await page.mouse.move(300, 300);
 			const browser = await puppeteer.launch({
 				// executablePath: '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser', // to use other browsers
 				// headless: true, // set to false to see the browser in action
-				headless: true, // set to false to see the browser in action
+				headless: false, // set to false to see the browser in action
 				args: ['--no-sandbox', '--disable-setuid-sandbox']
 			});
 
@@ -530,8 +535,8 @@ await page.mouse.move(300, 300);
 				waitUntil: 'domcontentloaded'
 			});
 			console.log(`Opened the problem: ${problemUrl}`);
-			const samples = await page.waitForSelector('.sample-test', { visible: true, timeout: 60000 });
-			console.log("samples: ", samples);
+			// const samples = await page.waitForSelector('.sample-test', { visible: true, timeout: 60000 });
+			// console.log("samples: ", samples);
 
 
 			// Extract the test cases using the page selectors
@@ -541,10 +546,10 @@ await page.mouse.move(300, 300);
 				// @ts-ignore 
 				// eslint-disable-next-line no-undef
 				const sampleTests = document.querySelectorAll('.sample-test');
-				console.log("sampleTests: ", sampleTests);
 
 				// Iterate over all sample test cases
 				sampleTests.forEach((test) => {
+					
 					const inputElement = test.querySelector('.input pre');
 					const outputElement = test.querySelector('.output pre');
 
@@ -552,9 +557,14 @@ await page.mouse.move(300, 300);
 					let input = '';
 					if (inputElement) {
 						const inputLines = inputElement.querySelectorAll('div');
-						input = Array.from(inputLines).map(line => line.textContent.trim()).join('\n');
+						if(inputLines.length === 0) {
+							input = inputElement.textContent.trim();
+						}
+						else {
+							input = Array.from(inputLines).map(line => line.textContent.trim()).join('\n');
+						}
 					}
-
+					
 					// Process the output: directly use the content of the <pre> tag
 					const output = outputElement ? outputElement.textContent.trim() : null;
 
@@ -609,14 +619,13 @@ await page.mouse.move(300, 300);
 	}
 	
 	// Get the command to run code
-	function getRunCommand(language, filePath, inputFilePath, outputFilePath) {
+	function getRunCommand(language, filePath) {
 		const fileDir = path.dirname(filePath);
 		const fileName = path.basename(filePath, path.extname(filePath)); // e.g., 1903_A_Halloumi_Boxes
 		const outputBinary = path.join(fileDir, `${fileName}.out`);
 		// Define input and result output files (you can change these as needed)
-		const inputFile = path.join(fileDir, '..', 'personal project', 'cp-buddy', 'input.txt');
+		const inputFile = path.join(fileDir, `${fileName}_input.txt`);
 		const resultOutputFile = path.join(fileDir, `${fileName}_result.txt`);
-		// outputFilePath = resultOutputFile;
 			
 		const commands = {
 			'C++': `/opt/homebrew/bin/g++-14 "${filePath}" -o "${outputBinary}" -std=c++20 && "${outputBinary}" < "${inputFile}" > "${resultOutputFile}"`,
@@ -681,27 +690,29 @@ await page.mouse.move(300, 300);
 				return;
 			}
 
-			// console.log("inputs: ", inputs);
+			console.log("inputs: ", inputs);
 			// console.log("outputs: ", outputs);
 
-			// Writing the input to file
-			fs.writeFileSync(inputFilePath, inputs.join('\n'));
-			console.log(`Input written to ${inputFilePath}`);
-
+			
 			// Defining commands to run based on the file extension
 			const ext = path.extname(filePath);
 			const language = detectLanguage(ext);
-
+			
 			if (!language) {
 				vscode.window.showErrorMessage("Unsupported file type.");
 				return;
 			}
-
-			const runCommand = getRunCommand(language, filePath, inputFilePath, outputFilePath);
-			console.log("runCommand: ", runCommand);
+			
+			// getting the appropriate run command
+			const runCommand = getRunCommand(language, filePath);
+			
 			const fileDir = path.dirname(filePath);
 			const fileName = path.basename(filePath, path.extname(filePath));
+			// Writing the input to file
+			inputFilePath = path.join(fileDir, `${fileName}_input.txt`);
 			outputFilePath = path.join(fileDir, `${fileName}_result.txt`);
+			fs.writeFileSync(inputFilePath, inputs.join('\n'));
+			console.log(`Input written to ${inputFilePath}`);
 			
 			if (!runCommand) {
 				vscode.window.showErrorMessage(`No execution command found for ${language}.`);
@@ -726,20 +737,25 @@ await page.mouse.move(300, 300);
 				}, () => {
 				return new Promise((resolve, reject) => {
 					// Executing the command and Getting the result of file execution
-					cp.exec(runCommand, (err, stdout, stderr) => {
+					cp.exec(runCommand, {timeout: 10000}, (err, stdout, stderr) => {
 						if (err || stderr) {
-							vscode.window.showErrorMessage(`Error: ${err || stderr}`);
-							createPannel(inputs.join('\n'), stdout, stderr, contestId, problemLetter);
+							if (err.killed) {
+								vscode.window.showErrorMessage("Error: Execution timed out!");
+							} else {
+								vscode.window.showErrorMessage(`Error: ${err.message || stderr}`);
+							}
+							console.log("stderr: " + stderr);
+							
+							createPannel(inputs.join('\n'), stdout, "Execution timed out!", contestId, problemLetter);
 							reject(err || stderr);
 							return;
 						}
-						console.log("stdout: ", stdout);
 						try {
 							const userOutput = fs.readFileSync(outputFilePath, 'utf8');
 							// vscode.window.showInformationMessage(`Output:\n${userOutput}`);
 							const correctOutput = outputs.join('\n');
-							console.log("correctOutput: ", correctOutput);
-							console.log("userOutput: ", userOutput);
+							// console.log("correctOutput: ", correctOutput);
+							// console.log("userOutput: ", userOutput);
 							
 							if (userOutput.trim() === correctOutput.trim()) {
 								createPannel(inputs.join('\n'), userOutput.trim(), stderr, contestId, problemLetter, correctOutput.trim(), sourceCode);
@@ -759,7 +775,10 @@ await page.mouse.move(300, 300);
 							cleanUpFiles(inputFilePath, outputFilePath);				
 							resolve();
 						}
-					})
+					}).on('kill', (code) => {
+						console.log("Exit code: ", code);
+						cleanUpFiles(inputFilePath, outputFilePath);				
+					});
 					console.log("Successfully executed the command: runTestCases");
 				});
 			});
