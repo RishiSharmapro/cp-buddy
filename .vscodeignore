@@ -1,0 +1,12 @@
+.vscode/**
+.git/**
+.gitignore
+*.vsix
+test/**
+*.cpp
+*.in
+*.out
+*.out.txt
+vsc-extension-quickstart.md
+eslint.config.mjs
+jsconfig.json

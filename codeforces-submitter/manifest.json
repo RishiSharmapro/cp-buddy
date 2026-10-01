@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "Codeforces Submitter",
+    "description": "Submit solutions to Codeforces",
+    "version": "1.0",
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "scripting",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": [
+        "https://codeforces.com/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://codeforces.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self';"
+    }
+}

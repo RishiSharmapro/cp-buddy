@@ -1,14 +1,29 @@
 {
   "name": "cp-buddy",
+  "publisher":"RishiSharmaPro",
   "displayName": "CP-buddy",
-  "description": "helper extension for competitive programers on vs code ",
-  "version": "0.0.1",
+  "description": "A VS Code companion for competitive programmers to fetch and run test cases with ease.",  
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.96.0"
   },
+  "keywords": [
+  "competitive programming",
+  "competitive programmer",
+  "cp",
+  "test cases",
+  "coding",
+  "programming",
+  "codeforces",
+  "vscode",
+  "cpp",
+  "c++",
+  "python"
+],
   "categories": [
     "Other"
   ],
+  "icon": "CP-BUDDY.png",
   "activationEvents": [
     "onCommand:cpBuddy.installLanguage"
   ],
@@ -33,13 +48,54 @@
           "light": "./button/web/light.png",
           "dark": "./dark.png"
         }
+      },
+      {
+        "command": "cp-buddy.refetchTestCases",
+        "title": "Refetch Test Cases (Bypass Cache)",
+        "category": "Cp-buddy"
+      },
+      {
+        "command": "cp-buddy.clearCache",
+        "title": "Clear Test Case Cache",
+        "category": "Cp-buddy"
+      },
+      {
+        "command": "cp-buddy.setCustomCommand",
+        "title": "Configure Custom Command for Language",
+        "category": "Cp-buddy"
       }
     ],
+    "configuration": {
+      "title": "CP-Buddy",
+      "properties": {
+        "cp-buddy.cppCompilerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path or name of the C++ compiler (e.g. g++-16, /opt/homebrew/bin/g++-16)"
+        },
+        "cp-buddy.customCompileCommands": {
+          "type": "object",
+          "default": {},
+          "description": "Custom compile command templates per language. Placeholders: {file}, {bin}, {dir}, {baseName}"
+        },
+        "cp-buddy.customRunCommands": {
+          "type": "object",
+          "default": {},
+          "description": "Custom run command templates per language. Placeholders: {bin}, {input}, {output}, {file}, {dir}, {baseName}"
+        }
+      }
+    },
     "keybindings": [
       {
         "command": "cp-buddy.runTestCases",
         "key": "ctrl+'",
         "mac": "cmd+'",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cp-buddy.refetchTestCases",
+        "key": "ctrl+shift+'",
+        "mac": "cmd+shift+'",
         "when": "editorTextFocus"
       }
     ],
@@ -49,6 +105,23 @@
           "command": "cp-buddy.runTestCases",
           "when": "editorTextFocus",
           "group": "navigation"
+        },
+        {
+          "command": "cp-buddy.refetchTestCases",
+          "when": "editorTextFocus",
+          "group": "1_modification"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "cp-buddy.runTestCases",
+          "when": "editorTextFocus",
+          "group": "cp-buddy@1"
+        },
+        {
+          "command": "cp-buddy.refetchTestCases",
+          "when": "editorTextFocus",
+          "group": "cp-buddy@2"
         }
       ]
     }
@@ -59,6 +132,7 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "test:unit": "mocha test/unit.test.js",
     "pretest": "npm run lint",
     "test": "vscode-test"
   },
